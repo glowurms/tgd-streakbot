@@ -30,7 +30,9 @@ const midWeekSummaryMinute = process.env.midWeekSummaryMinute ? parseInt(process
 
 const midWeekDayOfWeek = process.env.midWeekDayOfWeek ? parseInt(process.env.midWeekDayOfWeek) : 3;
 
-const channelName = process.env.channelName || 'daily-standup';
+const streakChannelName = process.env.streakChannelName || 'daily-standup';
+const botstreakChannelName = process.env.botstreakChannelName || 'tgd-streakbot-dev';
+
 
 let dayStartJob;
 let morningAnnouncementJob;
@@ -97,8 +99,8 @@ client.on('disconnect', (msg, code) => {
 console.log('client disconnect event configured');
 
 client.on('message', message => {
-	const channel = client.channels.find(c => c.name === channelName);
-	if (channel && message.channel.name === channel.name && message.author.id !== client.user.id) {
+	const streakChannel = client.channels.find(c => c.name === streakChannelName);
+	if (streakChannel && message.channel.name === streakChannel.name && message.author.id !== client.user.id) {
 		console.log(`Processing message received from ${message.author.username}`);
 		processMessageForStreak(message);
 	}
@@ -129,27 +131,27 @@ connect();
 console.log('initial connection established');
 
 const broadcastNewDay = () => {
-	const channel = client.channels.find(c => c.name === channelName);
+	const channel = client.channels.find(c => c.name === streakChannelName);
 	console.log('Start of new day (no announcement in channel)...');
 };
 
 broadcastMorningAnnouncement = () => {
-	const channel = client.channels.find(c => c.name === channelName);
+	const channel = client.channels.find(c => c.name === streakChannelName);
 	console.log('Announcing morning streak...');
-	const announcement = `Good morning and welcome to the ${channelName} channel! Check the pinned messages for a full introduction.\n` +
+	const announcement = `Good morning and welcome to the ${streakChannelName} channel! Check the pinned messages for a full introduction.\n` +
 						`Let the new day begin! Post your standup to start or continue your daily streak.${getUsersWhoPostedYesterday()}`;
 	channel.send(announcement);
 };
 
 const broadcastMidDayReminder = () => {
-	const channel = client.channels.find(c => c.name === channelName);
+	const channel = client.channels.find(c => c.name === streakChannelName);
 	console.log('Announcing mid-day reminder...');
 	const announcement = `The day is half done! Don't forget to post an update for the day, even a quick note about what you plan to do tomorrow is good.${getUsersWhoCouldLoseTheirStreak()}`;
 	channel.send(announcement);
 };
 
 const broadcastSummary = () => {
-	const channel = client.channels.find(c => c.name === channelName);
+	const channel = client.channels.find(c => c.name === streakChannelName);
 	console.log('Announcing mid-week summary...');
 	const announcement = `We're halfway through the week! Time for a weekly summary.${getUsersWhoPostedInThePastWeek()}`;
 	channel.send(announcement);
